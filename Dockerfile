@@ -2,7 +2,7 @@ FROM openjdk:8-jdk
 
 EXPOSE 8081
 
-ADD ./products /code
+ADD products /code
 WORKDIR /code
 
 RUN ./gradlew clean build -x check && cp /code/build/libs/ProductsApi.jar /app.jar
