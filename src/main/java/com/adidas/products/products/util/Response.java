@@ -1,0 +1,49 @@
+package com.adidas.products.products.util;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import java.nio.charset.StandardCharsets;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import reactor.core.publisher.Mono;
+
+/**
+ * Set of utility methods to mainpulate server response objects.
+ *
+ * @author pedrorocha
+ **/
+@Slf4j
+public final class Response {
+
+    /**
+     * Instantiate a new response object.
+     */
+    private Response() {
+    }
+
+    /**
+     * Writes a new reply message into the response server object.
+     *
+     * @param response   Server Http Response instance
+     * @param statusCode HttpStatus code to use
+     * @param object     object to reply with
+     */
+    public static <T> Mono<Void> replyWith(ServerHttpResponse response, HttpStatus statusCode, T object) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            byte[] bytes = mapper.writeValueAsString(object).getBytes(StandardCharsets.UTF_8);
+            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            DataBuffer buffer = response.bufferFactory().wrap(bytes);
+            response.setStatusCode(statusCode);
+            return response.writeWith(Mono.just(buffer));
+
+        } catch (Exception ex) {
+            log.debug("ReplyWith: {}", ex.getMessage());
+        }
+        return null;
+    }
+}
