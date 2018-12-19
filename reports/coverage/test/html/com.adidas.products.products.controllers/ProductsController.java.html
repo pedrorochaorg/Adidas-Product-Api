@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductsController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProductsApi</a> &gt; <a href="index.source.html" class="el_package">com.adidas.products.products.controllers</a> &gt; <span class="el_source">ProductsController.java</span></div><h1>ProductsController.java</h1><pre class="source lang-java linenums">package com.adidas.products.products.controllers;
+
+import com.adidas.products.products.common.messages.Rest;
+import com.adidas.products.products.models.ErrorResponse;
+import com.adidas.products.products.models.Product;
+import com.adidas.products.products.models.ProductScore;
+import com.adidas.products.products.models.Review;
+import com.adidas.products.products.services.ProductScoreService;
+import com.adidas.products.products.services.ProductService;
+import com.adidas.products.products.services.ReviewService;
+import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+/**
+ * Products Service Rest Controller
+ *
+ * @author pedrorocha
+ **/
+@RestController
+<span class="nc" id="L33">@Slf4j</span>
+public class ProductsController implements IProductsController {
+
+    private final ProductService productService;
+
+    /**
+     * Instantiates a new ProductsController, implementing all interaface methods.
+     *
+     * @param productService       instance to the product service
+     */
+    public ProductsController(
+            ProductService productService
+<span class="nc" id="L45">    ) {</span>
+<span class="nc" id="L46">        this.productService = productService;</span>
+<span class="nc" id="L47">    }</span>
+
+    @Override
+    @RequestMapping(path = &quot;/product/{product_id}&quot;, method = RequestMethod.GET, produces = Rest.CONTENT_FORMAT)
+    public Mono&lt;ResponseEntity&lt;Product&gt;&gt; getProduct(@PathVariable(name = &quot;product_id&quot;) final String productId) {
+<span class="nc" id="L52">        log.info(&quot;getScore , productId: {}&quot;, productId);</span>
+<span class="nc" id="L53">        return productService.findById(productId)</span>
+<span class="nc" id="L54">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L55">                .defaultIfEmpty(</span>
+<span class="nc" id="L56">                        ResponseEntity.notFound().build()</span>
+                );
+    }
+
+
+    @ExceptionHandler(WebClientResponseException.class)
+    public ResponseEntity&lt;String&gt; handleWebClientResponseException(WebClientResponseException ex) {
+<span class="nc" id="L63">        log.error(&quot;Error from WebClient - Status {}, Body {}&quot;, ex.getRawStatusCode(),</span>
+<span class="nc" id="L64">                ex.getResponseBodyAsString(), ex);</span>
+<span class="nc" id="L65">        return ResponseEntity.status(ex.getRawStatusCode()).body(ex.getResponseBodyAsString());</span>
+    }
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

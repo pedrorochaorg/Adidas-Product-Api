@@ -1,0 +1,32 @@
+server:
+  port: 8081
+spring:
+  security:
+    basic-auth:
+      - username: user
+        password: password
+        roles:
+          - ROLE_USER
+      - username: admin
+        password: admin
+        roles:
+          - ROLE_USER
+          - ROLE_ADMIN
+  external-services:
+    - name: reviews
+      url: http://reviews:8080
+      auth:
+        enabled: true
+        type: API_KEY
+        token: b0265933-055a-4939-87c7-4495fc777068
+    - name: adidas
+      url: https://www.adidas.co.uk/api
+      auth:
+        enabled: false
+
+
+logging:
+  level:
+    root: INFO
+    com.adidas.products.reviews: INFO
+    org.springframework: INFO

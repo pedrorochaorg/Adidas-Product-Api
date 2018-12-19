@@ -69,7 +69,6 @@ public class GlobalErrorExceptionHandler extends AbstractErrorWebExceptionHandle
 
         log.debug("ClassName: {}", className);
         log.debug("ErrorMessage: {}", throwable.getMessage());
-        log.debug("Error: {}", throwable.getStackTrace());
         switch (className) {
             case "WebExchangeBindException":
                 log.info(((WebExchangeBindException) throwable).getFieldErrors().toString());

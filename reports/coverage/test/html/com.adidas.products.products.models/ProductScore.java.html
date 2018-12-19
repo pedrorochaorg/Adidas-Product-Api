@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductScore.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProductsApi</a> &gt; <a href="index.source.html" class="el_package">com.adidas.products.products.models</a> &gt; <span class="el_source">ProductScore.java</span></div><h1>ProductScore.java</h1><pre class="source lang-java linenums">package com.adidas.products.products.models;
+
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
+import javax.validation.constraints.Min;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
+
+/**
+ * ProductScore model, used for marshaling and unmarshaling data from/to json while interacting with REST endpoints.
+ *
+ * @author pedrorocha
+ **/
+@ApiModel(description = &quot;ProductScore Model Object, &quot;)
+@Data
+@Builder
+@ToString
+public class ProductScore implements Serializable {
+
+
+    @Min(value = 0)
+    @ApiModelProperty(
+            dataType = &quot;Long&quot;,
+            example = &quot;12312313&quot;,
+            name = &quot;numberOfReviews&quot;,
+            readOnly = true
+    )
+    @JsonPropertyDescription(&quot;Total number of product received reviews&quot;)
+    private Long numberOfReviews;
+
+    @Min(value = 0)
+    @ApiModelProperty(
+            dataType = &quot;Double&quot;,
+            example = &quot;99.532353&quot;,
+            name = &quot;averageReviewScore&quot;,
+            readOnly = true
+    )
+    @JsonPropertyDescription(&quot;Average review score&quot;)
+    private Double averageReviewScore;
+
+    /**
+     * Simplified class constructor.
+     */
+<span class="nc" id="L47">    public ProductScore() {</span>
+<span class="nc" id="L48">    }</span>
+
+    /**
+     * Instantiates a new ProductScrore object.
+     *
+     * @param numberOfReviews    total number of reviews
+     * @param averageReviewScore average review score
+     */
+    public ProductScore(
+            @Min(value = 0)
+                    Long numberOfReviews,
+            @Min(value = 0)
+                    Double averageReviewScore
+<span class="nc" id="L61">    ) {</span>
+<span class="nc" id="L62">        this.numberOfReviews = numberOfReviews;</span>
+<span class="nc" id="L63">        this.averageReviewScore = averageReviewScore;</span>
+<span class="nc" id="L64">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

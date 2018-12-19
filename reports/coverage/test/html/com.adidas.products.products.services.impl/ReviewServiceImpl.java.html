@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReviewServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProductsApi</a> &gt; <a href="index.source.html" class="el_package">com.adidas.products.products.services.impl</a> &gt; <span class="el_source">ReviewServiceImpl.java</span></div><h1>ReviewServiceImpl.java</h1><pre class="source lang-java linenums">package com.adidas.products.products.services.impl;
+
+import com.adidas.products.products.common.messages.Rest;
+import com.adidas.products.products.config.ExternalServicesConfig;
+import com.adidas.products.products.config.models.ServiceConfig;
+import com.adidas.products.products.exceptions.ServiceUnavailableException;
+import com.adidas.products.products.models.Review;
+import com.adidas.products.products.services.ReviewService;
+import com.google.common.net.HttpHeaders;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+/**
+ * Implements the review service methods based on its interface.
+ *
+ * @author pedrorocha
+ **/
+@Service
+public class ReviewServiceImpl implements ReviewService {
+
+    private final WebClient webClient;
+    private final ServiceConfig config;
+
+    /**
+     * Instantiate a new Review Service.
+     *
+     * @param config external services configuration properties
+     */
+<span class="nc" id="L33">    public ReviewServiceImpl(ExternalServicesConfig config) {</span>
+<span class="nc" id="L34">        this.config = config.getService(&quot;reviews&quot;);</span>
+<span class="nc" id="L35">        this.webClient = WebClient.builder()</span>
+<span class="nc" id="L36">                .baseUrl(this.config.getUrl())</span>
+<span class="nc" id="L37">                .defaultHeader(&quot;Authorization&quot;,&quot;APIKEY &quot; + this.config.getAuth().getToken())</span>
+<span class="nc" id="L38">                .defaultHeader(HttpHeaders.CONTENT_TYPE, Rest.CONTENT_FORMAT)</span>
+<span class="nc" id="L39">                .build();</span>
+<span class="nc" id="L40">    }</span>
+
+    @Override
+    @HystrixCommand(fallbackMethod = &quot;empty&quot;)
+    public Mono&lt;Review&gt; findById(String id, String productId) {
+<span class="nc" id="L45">        return webClient.get()</span>
+<span class="nc" id="L46">                .uri(&quot;/review/&quot; + productId + &quot;/&quot; + id)</span>
+<span class="nc" id="L47">                .retrieve()</span>
+<span class="nc" id="L48">                .bodyToMono(Review.class);</span>
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = &quot;emptyList&quot;)
+    public Flux&lt;Review&gt; findAll() {
+<span class="nc" id="L54">        return webClient.get()</span>
+<span class="nc" id="L55">                .uri(&quot;/review&quot;)</span>
+<span class="nc" id="L56">                .retrieve()</span>
+<span class="nc" id="L57">                .bodyToFlux(Review.class);</span>
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = &quot;emptyList&quot;)
+    public Flux&lt;Review&gt; findByProductId(String productId) {
+<span class="nc" id="L63">        return webClient.get()</span>
+<span class="nc" id="L64">                .uri(&quot;/review?productId=&quot; + productId)</span>
+<span class="nc" id="L65">                .retrieve()</span>
+<span class="nc" id="L66">                .bodyToFlux(Review.class);</span>
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = &quot;empty&quot;)
+    public Mono&lt;Review&gt; findByIdAndProductId(String productId, String id) {
+<span class="nc" id="L72">        return webClient.get()</span>
+<span class="nc" id="L73">                .uri(&quot;/review/&quot; + productId + &quot;/&quot; + id)</span>
+<span class="nc" id="L74">                .retrieve()</span>
+<span class="nc" id="L75">                .bodyToMono(Review.class);</span>
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = &quot;empty&quot;)
+    public Mono&lt;Review&gt; update(Review review) {
+<span class="nc" id="L81">        return webClient.put()</span>
+<span class="nc" id="L82">                .uri(&quot;/review/&quot; + review.getProductId() + &quot;/&quot; + review.getId())</span>
+<span class="nc" id="L83">                .body(BodyInserters.fromObject(review))</span>
+<span class="nc" id="L84">                .exchange()</span>
+<span class="nc" id="L85">                .flatMap(updatedReview -&gt; updatedReview.bodyToMono(Review.class));</span>
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = &quot;empty&quot;)
+    public Mono&lt;Review&gt; create(Review review) {
+<span class="nc" id="L91">        return webClient.post()</span>
+<span class="nc" id="L92">                .uri(&quot;/review/&quot; + review.getProductId())</span>
+<span class="nc" id="L93">                .body(BodyInserters.fromObject(review))</span>
+<span class="nc" id="L94">                .exchange()</span>
+<span class="nc" id="L95">                .flatMap(updatedReview -&gt; updatedReview.bodyToMono(Review.class));</span>
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = &quot;emptyDelete&quot;)
+    public Mono&lt;Void&gt; delete(Review review) {
+<span class="nc" id="L101">        return webClient.delete()</span>
+<span class="nc" id="L102">                .uri(&quot;/review/&quot; + review.getProductId() + &quot;/&quot; + review.getId())</span>
+<span class="nc" id="L103">                .retrieve()</span>
+<span class="nc" id="L104">                .bodyToMono(Void.class);</span>
+    }
+
+
+    public Mono&lt;Review&gt; empty() {
+<span class="nc" id="L109">        return Mono.error(new ServiceUnavailableException());</span>
+    }
+
+    public Mono&lt;Void&gt; emptyDelete() {
+<span class="nc" id="L113">        return Mono.error(new ServiceUnavailableException());</span>
+    }
+
+    public Flux&lt;Review&gt; emptyList() {
+<span class="nc" id="L117">        return Flux.error(new ServiceUnavailableException());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

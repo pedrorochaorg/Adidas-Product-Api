@@ -26,7 +26,7 @@ apply plugin: 'groovy'
 apply plugin: 'project-report'
 
 group = 'com.adidas.products'
-version = '0.0.1-SNAPSHOT'
+version = ''
 sourceCompatibility = 1.8
 
 repositories {
