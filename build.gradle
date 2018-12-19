@@ -136,6 +136,11 @@ task endTest (dependsOn:  ['jacocoTestReport']) {
 
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.10'
+}
+
+
 test.dependsOn(initTest)
 test.finalizedBy(endTest)
 
