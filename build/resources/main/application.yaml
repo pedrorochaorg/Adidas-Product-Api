@@ -24,7 +24,6 @@ spring:
       auth:
         enabled: false
 
-
 logging:
   level:
     root: INFO
