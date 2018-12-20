@@ -19,7 +19,7 @@ RUN ls -la && \
 EXPORT PATH=$PATH:/opt/gradle/gradle-4.10.3/bin
 
 
-RUN chmod u+x gradle && ./gradlew clean build -x check && cp build/libs/ProductsApi.jar /app.jar
+RUN chmod u+x gradle && gradle clean build -x check && cp build/libs/ProductsApi.jar /app.jar
 
 
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","-Dspring.profiles.active=docker","/app.jar"]
