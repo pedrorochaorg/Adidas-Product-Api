@@ -40,7 +40,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @HystrixCommand(fallbackMethod = "empty")
+    @HystrixCommand(fallbackMethod = "findByIdFallback")
     public Mono<Review> findById(String id, String productId) {
         return webClient.get()
                 .uri("/review/" + productId + "/" + id)
@@ -49,7 +49,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @HystrixCommand(fallbackMethod = "emptyList")
+    public Mono<Review> findByIdFallback(String id, String productId) {
+        return Mono.error(new ServiceUnavailableException());
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = "findAllFallback")
     public Flux<Review> findAll() {
         return webClient.get()
                 .uri("/review")
@@ -58,7 +63,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @HystrixCommand(fallbackMethod = "emptyList")
+    public Flux<Review> findAllFallback() {
+        return Flux.error(new ServiceUnavailableException());
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = "findByProductIdFallback")
     public Flux<Review> findByProductId(String productId) {
         return webClient.get()
                 .uri("/review?productId=" + productId)
@@ -67,7 +77,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @HystrixCommand(fallbackMethod = "empty")
+    public Flux<Review> findByProductIdFallback(String productId) {
+        return Flux.error(new ServiceUnavailableException());
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = "findByIdAndProductIdFallback")
     public Mono<Review> findByIdAndProductId(String productId, String id) {
         return webClient.get()
                 .uri("/review/" + productId + "/" + id)
@@ -76,7 +91,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @HystrixCommand(fallbackMethod = "empty")
+    public Mono<Review> findByIdAndProductIdFallback(String productId, String id) {
+        return Mono.error(new ServiceUnavailableException());
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = "updateFallback")
     public Mono<Review> update(Review review) {
         return webClient.put()
                 .uri("/review/" + review.getProductId() + "/" + review.getId())
@@ -86,7 +106,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @HystrixCommand(fallbackMethod = "empty")
+    public Mono<Review> updateFallback(Review review) {
+        return Mono.error(new ServiceUnavailableException());
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = "createFallback")
     public Mono<Review> create(Review review) {
         return webClient.post()
                 .uri("/review/" + review.getProductId())
@@ -96,7 +121,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @HystrixCommand(fallbackMethod = "emptyDelete")
+    public Mono<Review> createFallback(Review review) {
+        return Mono.error(new ServiceUnavailableException());
+    }
+
+    @Override
+    @HystrixCommand(fallbackMethod = "deleteFallback")
     public Mono<Void> delete(Review review) {
         return webClient.delete()
                 .uri("/review/" + review.getProductId() + "/" + review.getId())
@@ -104,16 +134,8 @@ public class ReviewServiceImpl implements ReviewService {
                 .bodyToMono(Void.class);
     }
 
-
-    public Mono<Review> empty() {
+    @Override
+    public Mono<Void> deleteFallback(Review review) {
         return Mono.error(new ServiceUnavailableException());
-    }
-
-    public Mono<Void> emptyDelete() {
-        return Mono.error(new ServiceUnavailableException());
-    }
-
-    public Flux<Review> emptyList() {
-        return Flux.error(new ServiceUnavailableException());
     }
 }
